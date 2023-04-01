@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import nikitagorbatko.fojin.test.reviews.databinding.ItemCriticBinding
 
-class CriticsAdapter : PagingDataAdapter<Int, CriticsAdapter.ViewHolder>(DiffUtilCallback()) {
+class CriticsAdapter(onItemClick: (Int) -> Unit) : PagingDataAdapter<Int, CriticsAdapter.ViewHolder>(DiffUtilCallback()) {
 
     inner class ViewHolder(binding: ItemCriticBinding) : RecyclerView.ViewHolder(binding.root)
 

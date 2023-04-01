@@ -1,4 +1,4 @@
-package nikitagorbatko.fojin.test.reviews.ui.main
+package nikitagorbatko.fojin.test.reviews.ui.critics
 
 import android.graphics.Rect
 import android.view.View

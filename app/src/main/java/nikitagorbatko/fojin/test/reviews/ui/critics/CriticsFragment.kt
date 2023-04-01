@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import nikitagorbatko.fojin.test.reviews.MainActivity
 import nikitagorbatko.fojin.test.reviews.databinding.FragmentCriticsBinding
 
 class CriticsFragment : Fragment() {
@@ -19,11 +20,23 @@ class CriticsFragment : Fragment() {
         pageViewModel = ViewModelProvider(this).get(CriticsViewModel::class.java)
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCriticsBinding.inflate(inflater, container, false)
+//        val activity
+//        val params = appBar.layoutParams as CoordinatorLayout.LayoutParams
+//        if (params.behavior == null)
+//            params.behavior = AppBarLayout.Behavior()
+//        val behaviour = params.behavior as AppBarLayout.Behavior
+//        behaviour.setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
+//            override fun canDrag(appBarLayout: AppBarLayout): Boolean {
+//                return false
+//            }
+//        })
+
         return binding.root
     }
 

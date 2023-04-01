@@ -12,4 +12,16 @@
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:spanCount="2"
         tools:listitem="@layout/item_critic" />
+
+    <TextView
+        android:id="@+id/text_view_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textSize="24sp"
+        android:textColor="@color/error_red"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:text="Нет интернет соединения." />
+
 </RelativeLayout>
