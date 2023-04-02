@@ -56,6 +56,7 @@ class ReviewsFragment : Fragment() {
             reviewAdapter.submitData(it)
         }.launchIn(viewLifecycleOwner.lifecycleScope)
 
+
         binding.swipeContainer.setOnRefreshListener {
             reviewAdapter.refresh()
             job.cancel()
@@ -63,8 +64,8 @@ class ReviewsFragment : Fragment() {
             viewModel.getPagedReviews().onEach {
                 reviewAdapter.submitData(it)
             }.launchIn(viewLifecycleOwner.lifecycleScope)
+            binding.swipeContainer.isRefreshing = false
         }
-
 
 //        viewLifecycleOwner.lifecycleScope.launch {
 //            repeatOnLifecycle(Lifecycle.State.STARTED) {

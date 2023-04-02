@@ -1,5 +1,6 @@
 package nikitagorbatko.fojin.test.reviews.ui.critics
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
@@ -7,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import nikitagorbatko.fojin.test.reviews.R
 import nikitagorbatko.fojin.test.reviews.api.ResultDto
 import nikitagorbatko.fojin.test.reviews.databinding.ItemCriticBinding
 import nikitagorbatko.fojin.test.reviews.databinding.ItemReviewBinding
@@ -32,6 +34,7 @@ class CriticsAdapter(onItemClick: (Int) -> Unit) :
                 .load(critic?.multimedia?.resource?.src)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .centerCrop()
+                .error(R.drawable.ic_person_circle)
                 .into(imageViewCritic)
         }
     }
