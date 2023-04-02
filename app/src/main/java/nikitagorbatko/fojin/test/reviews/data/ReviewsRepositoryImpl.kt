@@ -7,9 +7,9 @@ class ReviewsRepositoryImpl private constructor(private val retrofit: RetrofitRe
     ReviewsRepository {
     companion object {
         @JvmStatic
-        private var INSTANCE: ReviewsRepositoryImpl? = null
+        private var INSTANCE: ReviewsRepository? = null
 
-        fun getInstance(retrofit: RetrofitReviews): ReviewsRepositoryImpl {
+        fun getInstance(retrofit: RetrofitReviews): ReviewsRepository {
             return if (INSTANCE == null) {
                 INSTANCE = ReviewsRepositoryImpl(retrofit)
                 INSTANCE!!

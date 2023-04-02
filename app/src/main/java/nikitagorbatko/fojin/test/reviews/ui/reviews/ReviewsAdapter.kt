@@ -21,7 +21,6 @@ class ReviewsAdapter(private val onItemClick: (String) -> Unit) :
         return ViewHolder(binding)
     }
 
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val review = getItem(position)
 

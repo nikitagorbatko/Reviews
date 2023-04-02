@@ -15,18 +15,17 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
 import androidx.paging.map
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import nikitagorbatko.fojin.test.reviews.databinding.FragmentReviewsBinding
 
-
-/**
- * A placeholder fragment containing a simple view.
- */
 class ReviewsFragment : Fragment() {
     private var _binding: FragmentReviewsBinding? = null
     private val binding get() = _binding!!
+    private lateinit var job: Job
 
     private val viewModel by viewModels<ReviewsViewModel> {
         ReviewsViewModel.Companion.ReviewsViewModelFactory()
@@ -42,7 +41,7 @@ class ReviewsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val reviewAdapter = ReviewsAdapter() {
+        val reviewAdapter = ReviewsAdapter {
             try {
                 val uri: Uri = Uri.parse(it)
                 val intent = Intent(Intent.ACTION_VIEW, uri)
@@ -53,14 +52,27 @@ class ReviewsFragment : Fragment() {
         binding.recyclerReviews.adapter =
             reviewAdapter.withLoadStateFooter(footer = ReviewsLoadStateAdapter { })
 
-        viewModel.pagedReviews.onEach {
+        job = viewModel.getPagedReviews().onEach {
             reviewAdapter.submitData(it)
         }.launchIn(viewLifecycleOwner.lifecycleScope)
 
         binding.swipeContainer.setOnRefreshListener {
             reviewAdapter.refresh()
-            //binding.swipeContainer.isRefreshing = false
+            job.cancel()
+            viewModel.invalidate()
+            viewModel.getPagedReviews().onEach {
+                reviewAdapter.submitData(it)
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
         }
+
+
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                viewModel.pagedReviews.collectLatest { pagingData ->
+//                    reviewAdapter.submitData(pagingData)
+//                }
+//            }
+//        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
