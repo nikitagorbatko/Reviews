@@ -21,6 +21,18 @@ interface ReviewsApi {
     @GET("v2/reviews/search.json?api-key=${API_KEY}")
     suspend fun getReviews(@Query("offset") offset: Int): ReviewsResponseDto?
 
+    @GET("v2/reviews/search.json?api-key=${API_KEY}")
+    suspend fun getReviewsDates(
+        @Query("offset") offset: Int,
+        @Query("publication-date") publicationDate: String
+    ): ReviewsResponseDto?
+
+    @GET("v2/reviews/search.json?api-key=${API_KEY}")
+    suspend fun getReviewsByKeyWord(
+        @Query("offset") offset: Int,
+        @Query("query") query: String
+    ): ReviewsResponseDto?
+
     @GET("v2/critics/{reviewer}.json?api-key=${API_KEY}")
     suspend fun getCritics(@Path("reviewer") reviewer: String = "all"): CriticsResponseDto?
 }

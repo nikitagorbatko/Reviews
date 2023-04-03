@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.kapt'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -37,6 +38,16 @@ android {
 }
 
 dependencies {
+    //Room
+    implementation("androidx.room:room-runtime:2.5.1")
+    annotationProcessor("androidx.room:room-compiler:2.5.1")
+    implementation("androidx.room:room-ktx:2.5.1")
+//    kapt("androidx.room:room-compiler:2.5.1")
+
+    //NavigationX
+    implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
+    implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
+
     //Swipe
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
@@ -54,9 +65,6 @@ dependencies {
     //Moshi
     implementation 'com.squareup.moshi:moshi:1.14.0'
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.14.0'
-
-    //Viewpager
-    implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
     //Paging
     implementation 'androidx.paging:paging-runtime:3.1.1'

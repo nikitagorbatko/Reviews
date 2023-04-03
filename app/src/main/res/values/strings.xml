@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Reviews</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
     <string name="load_again">Загрузить</string>
     <string name="read_review_button_text">Read review</string>
+    <string name="reviews">Reviews</string>
+    <string name="critics">Critics</string>
+    <string name="date_interval">Date interval</string>
+    <string name="all_reviews">All reviews</string>
 </resources>

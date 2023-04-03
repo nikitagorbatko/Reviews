@@ -22,4 +22,12 @@ class ReviewsRepositoryImpl private constructor(private val retrofit: RetrofitRe
     override suspend fun getReviews(offset: Int): ReviewsResponseDto? {
         return retrofit.reviewsApi.getReviews(offset)
     }
+
+    override suspend fun getIntervalReviews(offset: Int, interval: String): ReviewsResponseDto? {
+        return retrofit.reviewsApi.getReviewsDates(offset, interval)
+    }
+
+    override suspend fun getReviewsKeyWord(offset: Int, keyWord: String): ReviewsResponseDto? {
+        return retrofit.reviewsApi.getReviewsByKeyWord(offset, keyWord)
+    }
 }

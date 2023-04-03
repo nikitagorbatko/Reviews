@@ -2,14 +2,12 @@ package nikitagorbatko.fojin.test.reviews.ui.reviews
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import kotlinx.coroutines.delay
-import nikitagorbatko.fojin.test.reviews.api.RetrofitReviews
 import nikitagorbatko.fojin.test.reviews.api.ReviewDto
-import nikitagorbatko.fojin.test.reviews.domain.GetReviewsUseCase
+import nikitagorbatko.fojin.test.reviews.domain.GetReviewsIntervalUseCase
 
-
-class ReviewsPagingSource(
-    private val getReviewsUseCase: GetReviewsUseCase
+class ReviewsIntervalPagingSource(
+    private val getReviewsIntervalUseCase: GetReviewsIntervalUseCase,
+    private val interval: String
 ) : PagingSource<Int, ReviewDto>() {
 
     override fun getRefreshKey(state: PagingState<Int, ReviewDto>): Int = DEFAULT_OFFSET
@@ -18,16 +16,14 @@ class ReviewsPagingSource(
         val offset = params.key ?: DEFAULT_OFFSET
 
         return kotlin.runCatching {
-            getReviewsUseCase.execute(offset)
+            getReviewsIntervalUseCase.execute(offset, interval)
         }.fold(onSuccess = {
             LoadResult.Page(
                 it?.results ?: emptyList(),
                 null,
                 if (it?.hasMore == true) offset + OFFSET_STEP else null
             )
-        }, onFailure = {
-            LoadResult.Error(it)
-        })
+        }, onFailure = { LoadResult.Error(it) })
     }
 
     companion object {

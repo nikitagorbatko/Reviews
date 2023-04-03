@@ -1,31 +1,39 @@
 package nikitagorbatko.fojin.test.reviews.ui.reviews
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.widget.PopupMenu
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
-import androidx.paging.map
+import androidx.paging.PagingData
+import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import nikitagorbatko.fojin.test.reviews.R
 import nikitagorbatko.fojin.test.reviews.databinding.FragmentReviewsBinding
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class ReviewsFragment : Fragment() {
     private var _binding: FragmentReviewsBinding? = null
     private val binding get() = _binding!!
-    private lateinit var job: Job
+    private lateinit var requestJob: Job
+    private lateinit var reviewAdapter: ReviewsAdapter
 
     private val viewModel by viewModels<ReviewsViewModel> {
         ReviewsViewModel.Companion.ReviewsViewModelFactory()
@@ -41,52 +49,139 @@ class ReviewsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val reviewAdapter = ReviewsAdapter {
+        reviewAdapter = ReviewsAdapter {
             try {
                 val uri: Uri = Uri.parse(it)
                 val intent = Intent(Intent.ACTION_VIEW, uri)
                 startActivity(intent)
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
 
-        binding.recyclerReviews.adapter =
-            reviewAdapter.withLoadStateFooter(footer = ReviewsLoadStateAdapter { })
+        bind()
+        observe()
+    }
 
-        job = viewModel.getPagedReviews().onEach {
+
+    /** observes viewmodel */
+    private fun observe() {
+        requestJob = viewModel.pagedReviews().onEach {
             reviewAdapter.submitData(it)
         }.launchIn(viewLifecycleOwner.lifecycleScope)
-
-
-        binding.swipeContainer.setOnRefreshListener {
-            reviewAdapter.refresh()
-            job.cancel()
-            viewModel.invalidate()
-            viewModel.getPagedReviews().onEach {
-                reviewAdapter.submitData(it)
-            }.launchIn(viewLifecycleOwner.lifecycleScope)
-            binding.swipeContainer.isRefreshing = false
-        }
-
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                viewModel.pagedReviews.collectLatest { pagingData ->
-//                    reviewAdapter.submitData(pagingData)
-//                }
-//            }
-//        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 reviewAdapter.loadStateFlow.collect {
-                    binding.progressBar.isVisible = it.source.refresh is LoadState.Loading
-                    binding.textViewError.isVisible = it.source.refresh is LoadState.Error
+                    binding.swipeRefreshLayout.isRefreshing = it.source.refresh is LoadState.Loading
+                    binding.textViewError.isVisible = it.source.append is LoadState.Error
                 }
             }
         }
+    }
+
+    /** binds views */
+    private fun bind() {
+        binding.recyclerReviews.adapter =
+            reviewAdapter.withLoadStateFooter(footer = ReviewsLoadStateAdapter { })
+
+
+        binding.searchView.setOnSearchClickListener {
+            binding.textViewTitle.visibility = View.GONE
+        }
+
+        binding.searchView.setOnCloseListener {
+            binding.textViewTitle.visibility = View.VISIBLE
+            return@setOnCloseListener false
+        }
+
+        binding.imageViewCalendar.setOnClickListener {
+            showOnToolbarCalendarPopup(it)
+        }
+
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                cancelAndClean()
+                requestJob = viewModel.pagedReviewsKeyWord(query!!).onEach {
+                    reviewAdapter.submitData(it)
+                }.launchIn(viewLifecycleOwner.lifecycleScope)
+                binding.textViewTitle.visibility = View.VISIBLE
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return true
+            }
+        })
+
+        //Не смог добиться корректной работы reviewAdapter.refresh()
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            cancelAndClean()
+            requestJob = viewModel.pagedReviews().onEach {
+                reviewAdapter.submitData(it)
+            }.launchIn(viewLifecycleOwner.lifecycleScope)
+            //reviewAdapter.refresh()
+        }
+    }
+
+    private fun showOnToolbarCalendarPopup(view: View) {
+        val popup = PopupMenu(requireContext(), view)
+        popup.inflate(R.menu.dropdown_calendar_menu)
+
+        popup.setOnMenuItemClickListener { item: MenuItem? ->
+            when (item!!.itemId) {
+                R.id.custom -> {
+                    cancelAndClean()
+                    showDatePicker()
+                }
+                R.id.full -> {
+                    cancelAndClean()
+                    requestJob = viewModel.pagedReviews().onEach {
+                        reviewAdapter.submitData(it)
+                    }.launchIn(viewLifecycleOwner.lifecycleScope)
+                }
+            }
+            true
+        }
+        popup.show()
+    }
+
+    /**
+     * Отменяет job и очищает recycler adapter
+     * Возможно стоит сделать универсальный pagingSource и не хранить ссылку на job`ы экземпляров
+     * Pager`ов
+     * */
+    private fun cancelAndClean() {
+        requestJob.cancel()
+        reviewAdapter.submitData(lifecycle, PagingData.empty())
+    }
+
+
+    private fun showDatePicker() {
+        val datePicker = MaterialDatePicker.Builder.dateRangePicker()
+            .setTitleText(getString(R.string.app_name))
+            .build()
+
+        datePicker.addOnPositiveButtonClickListener {
+            cancelAndClean()
+
+            requestJob =
+                viewModel.pagedReviewsInterval("${it.first.convertToDate()}:${it.second.convertToDate()}")
+                    .onEach { pagingData ->
+                        reviewAdapter.submitData(pagingData)
+                    }.launchIn(viewLifecycleOwner.lifecycleScope)
+        }
+        datePicker.show(parentFragmentManager, "MaterialDatePicker")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+}
+
+@SuppressLint("SimpleDateFormat")
+fun Long.convertToDate(): String {
+    val date = Date(this)
+    val format = SimpleDateFormat("yyyy-MM-dd")
+    return format.format(date)
 }

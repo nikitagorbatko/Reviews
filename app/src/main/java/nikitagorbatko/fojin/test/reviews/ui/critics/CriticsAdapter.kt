@@ -13,7 +13,7 @@ import nikitagorbatko.fojin.test.reviews.api.ResultDto
 import nikitagorbatko.fojin.test.reviews.databinding.ItemCriticBinding
 import nikitagorbatko.fojin.test.reviews.databinding.ItemReviewBinding
 
-class CriticsAdapter(onItemClick: (Int) -> Unit) :
+class CriticsAdapter(private val onItemClick: (ResultDto) -> Unit) :
     RecyclerView.Adapter<CriticsAdapter.ViewHolder>() {
     private val critics = mutableListOf<ResultDto?>()
 
@@ -30,6 +30,9 @@ class CriticsAdapter(onItemClick: (Int) -> Unit) :
         val critic = critics[position]
         with(holder.binding) {
             textViewName.text = critic?.displayName
+            root.setOnClickListener {
+                onItemClick(critic!!)
+            }
             Glide.with(root)
                 .load(critic?.multimedia?.resource?.src)
                 .transition(DrawableTransitionOptions.withCrossFade())
