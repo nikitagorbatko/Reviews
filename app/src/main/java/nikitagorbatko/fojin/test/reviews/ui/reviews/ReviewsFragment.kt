@@ -16,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -32,8 +33,8 @@ class ReviewsFragment : Fragment() {
     private lateinit var requestJob: Job
     private lateinit var reviewAdapter: ReviewsAdapter
 
-    private val viewModel by viewModels<ReviewsViewModel> {
-        ReviewsViewModel.Companion.ReviewsViewModelFactory(
+    private val viewModel by viewModels<ReviewsFragmentViewModel> {
+        ReviewsFragmentViewModel.Companion.ReviewsViewModelFactory(
             ReviewsDatabase.getDatabase(requireContext()).getReviewsDao()
         )
     }
@@ -48,6 +49,7 @@ class ReviewsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //binding.searchView.color
         reviewAdapter = ReviewsAdapter {
             try {
                 val uri: Uri = Uri.parse(it)
@@ -76,12 +78,20 @@ class ReviewsFragment : Fragment() {
                 }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.errorChannel.collect {
+                    Snackbar.make(binding.root, it, Snackbar.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     /** binds views */
     private fun bind() {
         binding.recyclerReviews.adapter =
-            reviewAdapter.withLoadStateFooter(footer = ReviewsLoadStateAdapter { })
+            reviewAdapter.withLoadStateFooter(footer = ReviewsLoadStateAdapter())
 
 
         binding.searchView.setOnSearchClickListener {
@@ -164,10 +174,14 @@ class ReviewsFragment : Fragment() {
             cancelAndClean()
 
             requestJob =
-                viewModel.pagedReviews(interval = "${it.first.convertToDate()}:${it.second.convertToDate()}")
-                    .onEach { pagingData ->
-                        reviewAdapter.submitData(pagingData)
-                    }.launchIn(viewLifecycleOwner.lifecycleScope)
+                viewModel.pagedReviews(
+                    interval = Pair(
+                        it.first.convertToDate(),
+                        it.second.convertToDate()
+                    )
+                ).onEach { pagingData ->
+                    reviewAdapter.submitData(pagingData)
+                }.launchIn(viewLifecycleOwner.lifecycleScope)
         }
         datePicker.addOnNegativeButtonClickListener {
             reviewAdapter.notifyDataSetChanged()

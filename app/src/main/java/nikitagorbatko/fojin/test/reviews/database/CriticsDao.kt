@@ -8,11 +8,11 @@ import androidx.room.Query
 @Dao
 interface CriticsDao {
     @Query("SELECT * FROM critic_table")
-    fun getCritics(): List<CriticDbo>
+    suspend fun getCritics(): List<CriticDbo>
 
     @Query("DELETE FROM critic_table")
-    fun deleteAllCritics()
+    suspend fun deleteAllCritics()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCritic(vararg critic: CriticDbo)
+    suspend fun insertCritic(critics: List<CriticDbo>)
 }

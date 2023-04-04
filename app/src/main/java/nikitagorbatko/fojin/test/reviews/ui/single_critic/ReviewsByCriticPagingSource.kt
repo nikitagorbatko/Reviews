@@ -1,20 +1,21 @@
-package nikitagorbatko.fojin.test.reviews.ui.reviews
+package nikitagorbatko.fojin.test.reviews.ui.single_critic
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import kotlinx.coroutines.delay
 import nikitagorbatko.fojin.test.reviews.api.RetrofitReviews
 import nikitagorbatko.fojin.test.reviews.api.ReviewDto
+import nikitagorbatko.fojin.test.reviews.domain.GetReviewsByCriticDbUseCase
+import nikitagorbatko.fojin.test.reviews.domain.GetReviewsByCriticUseCase
 import nikitagorbatko.fojin.test.reviews.domain.GetReviewsDbUseCase
 import nikitagorbatko.fojin.test.reviews.domain.GetReviewsUseCase
 import nikitagorbatko.fojin.test.reviews.ui.entities.ReviewUi
 
 
-class ReviewsPagingSource(
-    private val getReviewsUseCase: GetReviewsUseCase,
-    private val getReviewsDbUseCase: GetReviewsDbUseCase,
-    private val interval: Pair<String, String>? = null,
-    private val keyWord: String? = null,
+class ReviewsByCriticPagingSource(
+    private val getReviewsByCriticUseCase: GetReviewsByCriticUseCase,
+    private val getReviewsByCriticDbUseCase: GetReviewsByCriticDbUseCase,
+    private val reviewer: String,
     private val onErrorCrutch: (message: String) -> Unit
 ) : PagingSource<Int, ReviewUi>() {
 
@@ -24,7 +25,7 @@ class ReviewsPagingSource(
         val offset = params.key ?: DEFAULT_OFFSET
 
         return kotlin.runCatching {
-            getReviewsUseCase.execute(offset, interval, keyWord)
+            getReviewsByCriticUseCase.execute(offset, reviewer)
         }.fold(onSuccess = {
             LoadResult.Page(
                 it,
@@ -32,7 +33,7 @@ class ReviewsPagingSource(
                 if (it.isNotEmpty()) offset + OFFSET_STEP else null
             )
         }, onFailure = {
-            val reviews = getReviewsDbUseCase.execute(interval, keyWord)
+            val reviews = getReviewsByCriticDbUseCase.execute(reviewer)
             if (offset == DEFAULT_OFFSET && reviews.isNotEmpty()) {
                 onErrorCrutch("No internet connection")
                 LoadResult.Page(

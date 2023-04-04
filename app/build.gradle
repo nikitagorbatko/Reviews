@@ -66,6 +66,7 @@ dependencies {
     //Moshi
     implementation 'com.squareup.moshi:moshi:1.14.0'
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.14.0'
+    implementation("com.squareup.moshi:moshi-kotlin:1.14.0")
 
     //Paging
     implementation 'androidx.paging:paging-runtime:3.1.1'

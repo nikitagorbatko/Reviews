@@ -31,8 +31,8 @@ class ReviewsRepositoryImpl private constructor(
         return ReviewsDtoToUiMapper.convert(reviews?.results)
     }
 
-    override suspend fun getIntervalReviews(offset: Int, interval: String): List<ReviewUi> {
-        val reviews = retrofit.reviewsApi.getReviewsDates(offset, interval)
+    override suspend fun getIntervalReviews(offset: Int, interval: Pair<String, String>): List<ReviewUi> {
+        val reviews = retrofit.reviewsApi.getReviewsInterval(offset, "${interval.first}:${interval.second}")
         convertAndSaveToDb(reviews)
         return ReviewsDtoToUiMapper.convert(reviews?.results)
     }

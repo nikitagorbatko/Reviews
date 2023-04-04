@@ -1,7 +1,10 @@
 package nikitagorbatko.fojin.test.reviews.ui.entities
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import nikitagorbatko.fojin.test.reviews.entity.Critic
 
+@Parcelize
 class CriticUi(
     override val displayName: String?,
     override val sortName: String?,
@@ -13,4 +16,4 @@ class CriticUi(
     override val resourceHeight: Int?,
     override val resourceWidth: Int?,
     override val resourceCredit: String?
-) : Critic
+) : Critic, Parcelable

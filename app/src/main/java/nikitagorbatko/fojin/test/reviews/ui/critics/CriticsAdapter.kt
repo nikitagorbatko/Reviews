@@ -8,10 +8,11 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import nikitagorbatko.fojin.test.reviews.R
 import nikitagorbatko.fojin.test.reviews.api.CriticDto
 import nikitagorbatko.fojin.test.reviews.databinding.ItemCriticBinding
+import nikitagorbatko.fojin.test.reviews.ui.entities.CriticUi
 
-class CriticsAdapter(private val onItemClick: (CriticDto) -> Unit) :
+class CriticsAdapter(private val onItemClick: (CriticUi) -> Unit) :
     RecyclerView.Adapter<CriticsAdapter.ViewHolder>() {
-    private val critics = mutableListOf<CriticDto?>()
+    private val critics = mutableListOf<CriticUi>()
 
     inner class ViewHolder(val binding: ItemCriticBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -30,7 +31,7 @@ class CriticsAdapter(private val onItemClick: (CriticDto) -> Unit) :
                 onItemClick(critic!!)
             }
             Glide.with(root)
-                .load(critic?.multimedia?.resource?.src)
+                .load(critic?.resourceSrc)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .centerCrop()
                 .error(R.drawable.ic_person_circle)
@@ -38,7 +39,7 @@ class CriticsAdapter(private val onItemClick: (CriticDto) -> Unit) :
         }
     }
 
-    fun add(listCritics: List<CriticDto?>) {
+    fun add(listCritics: List<CriticUi>) {
         critics.clear()
         critics.addAll(listCritics)
         notifyDataSetChanged()

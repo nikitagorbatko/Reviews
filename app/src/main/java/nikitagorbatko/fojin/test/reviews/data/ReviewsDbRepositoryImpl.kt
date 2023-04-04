@@ -1,6 +1,6 @@
 package nikitagorbatko.fojin.test.reviews.data
 
-import nikitagorbatko.fojin.test.reviews.api.RetrofitReviews
+import nikitagorbatko.fojin.test.reviews.database.ReviewDbo
 import nikitagorbatko.fojin.test.reviews.database.ReviewsDao
 import nikitagorbatko.fojin.test.reviews.ui.entities.ReviewUi
 import nikitagorbatko.fojin.test.reviews.utils.ReviewsDboToUiMapper
@@ -20,8 +20,17 @@ class ReviewsDbRepositoryImpl private constructor(private val reviewsDao: Review
         }
     }
 
-    override suspend fun getReviewsFromDb(): List<ReviewUi> {
-        val reviews = reviewsDao.getReviews()
+    override suspend fun getReviewsFromDb(interval: Pair<String, String>?, keyWord: String?): List<ReviewUi> {
+        var reviews: List<ReviewDbo>
+        if (interval != null) {
+            reviews = reviewsDao.getReviewsInterval(interval.first, interval.second)
+            return ReviewsDboToUiMapper.convert(reviews)
+        }
+        if (keyWord != null) {
+            reviews = reviewsDao.getReviewsKeyWord(keyWord)
+            return ReviewsDboToUiMapper.convert(reviews)
+        }
+        reviews = reviewsDao.getReviews()
         return ReviewsDboToUiMapper.convert(reviews)
     }
 }

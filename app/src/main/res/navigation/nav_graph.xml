@@ -13,11 +13,9 @@
         <action
             android:id="@+id/action_criticsFragment_to_singleCriticFragment"
             app:destination="@id/singleCriticFragment">
-<!--        <argument-->
-<!--            android:name="critic"-->
-<!--            app:argType="integer"-->
-<!--            android:defaultValue="1" />-->
-
+            <argument
+                android:name="critic1"
+                app:argType="nikitagorbatko.fojin.test.reviews.ui.entities.CriticUi" />
         </action>
     </fragment>
 
@@ -34,9 +32,6 @@
         <action
             android:id="@+id/action_singleCriticFragment_to_criticsFragment"
             app:destination="@id/navigation_critics" />
-        <argument
-            android:name="critic1"
-            app:argType="nikitagorbatko.fojin.test.reviews.api.CriticDto" />
     </fragment>
 
 </navigation>
