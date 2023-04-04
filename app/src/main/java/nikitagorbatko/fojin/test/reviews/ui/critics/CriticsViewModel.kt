@@ -6,13 +6,11 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import nikitagorbatko.fojin.test.reviews.api.CriticsResponseDto
-import nikitagorbatko.fojin.test.reviews.api.ResultDto
+import nikitagorbatko.fojin.test.reviews.api.CriticDto
 import nikitagorbatko.fojin.test.reviews.domain.GetCriticsUseCase
-import nikitagorbatko.fojin.test.reviews.ui.reviews.ReviewsViewModel
 
 class CriticsViewModel(private val getCriticsUseCase: GetCriticsUseCase) : ViewModel() {
-    private val _critics = MutableStateFlow(listOf<ResultDto?>())
+    private val _critics = MutableStateFlow(listOf<CriticDto?>())
     val critics = _critics.asStateFlow()
 
     init {

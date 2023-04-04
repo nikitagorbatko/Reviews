@@ -36,7 +36,7 @@
             app:destination="@id/navigation_critics" />
         <argument
             android:name="critic1"
-            app:argType="nikitagorbatko.fojin.test.reviews.api.ResultDto" />
+            app:argType="nikitagorbatko.fojin.test.reviews.api.CriticDto" />
     </fragment>
 
 </navigation>

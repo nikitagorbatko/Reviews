@@ -14,7 +14,7 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.launch
 import nikitagorbatko.fojin.test.reviews.R
-import nikitagorbatko.fojin.test.reviews.api.ResultDto
+import nikitagorbatko.fojin.test.reviews.api.CriticDto
 import nikitagorbatko.fojin.test.reviews.api.RetrofitReviews
 import nikitagorbatko.fojin.test.reviews.data.CriticsRepositoryImpl
 import nikitagorbatko.fojin.test.reviews.databinding.FragmentCriticsBinding
@@ -54,7 +54,7 @@ class CriticsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val moshi = Moshi.Builder().build()
-        val jsonAdapter: JsonAdapter<ResultDto> = moshi.adapter(ResultDto::class.java)
+        val jsonAdapter: JsonAdapter<CriticDto> = moshi.adapter(CriticDto::class.java)
         val adapter = CriticsAdapter {
             val bundle = bundleOf("critic" to jsonAdapter.toJson(it))
             activity?.findViewById<BottomNavigationView>(R.id.bottom_navigation_view)?.visibility = View.GONE

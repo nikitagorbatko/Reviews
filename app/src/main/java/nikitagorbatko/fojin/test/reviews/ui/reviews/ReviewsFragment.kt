@@ -7,24 +7,21 @@ import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import nikitagorbatko.fojin.test.reviews.R
+import nikitagorbatko.fojin.test.reviews.database.ReviewsDatabase
 import nikitagorbatko.fojin.test.reviews.databinding.FragmentReviewsBinding
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -36,7 +33,9 @@ class ReviewsFragment : Fragment() {
     private lateinit var reviewAdapter: ReviewsAdapter
 
     private val viewModel by viewModels<ReviewsViewModel> {
-        ReviewsViewModel.Companion.ReviewsViewModelFactory()
+        ReviewsViewModel.Companion.ReviewsViewModelFactory(
+            ReviewsDatabase.getDatabase(requireContext()).getReviewsDao()
+        )
     }
 
     override fun onCreateView(
@@ -99,12 +98,11 @@ class ReviewsFragment : Fragment() {
         }
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
+            override fun onQueryTextSubmit(keyWord: String?): Boolean {
                 cancelAndClean()
-                requestJob = viewModel.pagedReviewsKeyWord(query!!).onEach {
+                requestJob = viewModel.pagedReviews(keyWord = keyWord!!).onEach {
                     reviewAdapter.submitData(it)
                 }.launchIn(viewLifecycleOwner.lifecycleScope)
-                binding.textViewTitle.visibility = View.VISIBLE
                 return true
             }
 
@@ -142,6 +140,8 @@ class ReviewsFragment : Fragment() {
             }
             true
         }
+
+
         popup.show()
     }
 
@@ -155,7 +155,6 @@ class ReviewsFragment : Fragment() {
         reviewAdapter.submitData(lifecycle, PagingData.empty())
     }
 
-
     private fun showDatePicker() {
         val datePicker = MaterialDatePicker.Builder.dateRangePicker()
             .setTitleText(getString(R.string.app_name))
@@ -165,10 +164,13 @@ class ReviewsFragment : Fragment() {
             cancelAndClean()
 
             requestJob =
-                viewModel.pagedReviewsInterval("${it.first.convertToDate()}:${it.second.convertToDate()}")
+                viewModel.pagedReviews(interval = "${it.first.convertToDate()}:${it.second.convertToDate()}")
                     .onEach { pagingData ->
                         reviewAdapter.submitData(pagingData)
                     }.launchIn(viewLifecycleOwner.lifecycleScope)
+        }
+        datePicker.addOnNegativeButtonClickListener {
+            reviewAdapter.notifyDataSetChanged()
         }
         datePicker.show(parentFragmentManager, "MaterialDatePicker")
     }

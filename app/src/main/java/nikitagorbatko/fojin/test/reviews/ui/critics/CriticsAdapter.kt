@@ -1,21 +1,17 @@
 package nikitagorbatko.fojin.test.reviews.ui.critics
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.paging.PagingDataAdapter
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import nikitagorbatko.fojin.test.reviews.R
-import nikitagorbatko.fojin.test.reviews.api.ResultDto
+import nikitagorbatko.fojin.test.reviews.api.CriticDto
 import nikitagorbatko.fojin.test.reviews.databinding.ItemCriticBinding
-import nikitagorbatko.fojin.test.reviews.databinding.ItemReviewBinding
 
-class CriticsAdapter(private val onItemClick: (ResultDto) -> Unit) :
+class CriticsAdapter(private val onItemClick: (CriticDto) -> Unit) :
     RecyclerView.Adapter<CriticsAdapter.ViewHolder>() {
-    private val critics = mutableListOf<ResultDto?>()
+    private val critics = mutableListOf<CriticDto?>()
 
     inner class ViewHolder(val binding: ItemCriticBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -42,7 +38,7 @@ class CriticsAdapter(private val onItemClick: (ResultDto) -> Unit) :
         }
     }
 
-    fun add(listCritics: List<ResultDto?>) {
+    fun add(listCritics: List<CriticDto?>) {
         critics.clear()
         critics.addAll(listCritics)
         notifyDataSetChanged()

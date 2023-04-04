@@ -1,11 +1,12 @@
 package nikitagorbatko.fojin.test.reviews.data
 
 import nikitagorbatko.fojin.test.reviews.api.ReviewsResponseDto
+import nikitagorbatko.fojin.test.reviews.ui.entities.ReviewUi
 
 interface ReviewsRepository {
-    suspend fun getReviews(offset: Int): ReviewsResponseDto?
+    suspend fun getReviews(offset: Int): List<ReviewUi>
 
-    suspend fun getIntervalReviews(offset: Int, interval: String): ReviewsResponseDto?
+    suspend fun getIntervalReviews(offset: Int, interval: String): List<ReviewUi>
 
-    suspend fun getReviewsKeyWord(offset: Int, keyWord: String): ReviewsResponseDto?
+    suspend fun getReviewsKeyWord(offset: Int, keyWord: String): List<ReviewUi>
 }

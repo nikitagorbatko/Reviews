@@ -10,9 +10,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import nikitagorbatko.fojin.test.reviews.api.ReviewDto
 import nikitagorbatko.fojin.test.reviews.databinding.ItemReviewBinding
+import nikitagorbatko.fojin.test.reviews.ui.entities.ReviewUi
 
 class ReviewsAdapter(private val onItemClick: (String) -> Unit) :
-    PagingDataAdapter<ReviewDto, ReviewsAdapter.ViewHolder>(DiffUtilCallback()) {
+    PagingDataAdapter<ReviewUi, ReviewsAdapter.ViewHolder>(DiffUtilCallback()) {
 
     inner class ViewHolder(val binding: ItemReviewBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -26,7 +27,7 @@ class ReviewsAdapter(private val onItemClick: (String) -> Unit) :
 
         with(holder.binding) {
             Glide.with(root)
-                .load(review?.multimedia?.src)
+                .load(review?.multimediaSrc)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .centerCrop()
                 .into(imageViewReview)
@@ -35,21 +36,21 @@ class ReviewsAdapter(private val onItemClick: (String) -> Unit) :
             textViewAuthor.text = review?.byline
             textViewData.text = review?.dateUpdated
             buttonRead.setOnClickListener {
-                review?.link?.url?.let { it1 -> onItemClick(it1) }
+                review?.linkUrl?.let { it1 -> onItemClick(it1) }
             }
         }
     }
 }
 
-class DiffUtilCallback : DiffUtil.ItemCallback<ReviewDto>() {
+class DiffUtilCallback : DiffUtil.ItemCallback<ReviewUi>() {
 
-    override fun areItemsTheSame(oldItem: ReviewDto, newItem: ReviewDto): Boolean {
+    override fun areItemsTheSame(oldItem: ReviewUi, newItem: ReviewUi): Boolean {
         return oldItem.displayTitle == newItem.displayTitle
                 && oldItem.byline == newItem.byline
                 && oldItem.publicationDate == newItem.publicationDate
     }
 
-    override fun areContentsTheSame(oldItem: ReviewDto, newItem: ReviewDto): Boolean {
+    override fun areContentsTheSame(oldItem: ReviewUi, newItem: ReviewUi): Boolean {
         return oldItem.dateUpdated == newItem.dateUpdated
     }
 }

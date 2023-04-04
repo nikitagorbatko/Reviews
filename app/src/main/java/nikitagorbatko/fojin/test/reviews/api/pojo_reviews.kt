@@ -9,7 +9,7 @@ data class ReviewsResponseDto(
     @Json(name = "copyright") var copyright: String? = null,
     @Json(name = "has_more") var hasMore: Boolean? = null,
     @Json(name = "num_results") var numResults: Int? = null,
-    @Json(name = "results") var results: List<ReviewDto> = emptyList()
+    @Json(name = "results") var results: List<ReviewDto>? = null
 )
 
 @JsonClass(generateAdapter = true)

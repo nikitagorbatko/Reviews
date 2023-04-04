@@ -12,12 +12,12 @@ data class CriticsResponseDto(
     @Json(name = "status") val status: String?,
     @Json(name = "copyright") val copyright: String?,
     @Json(name = "num_results") val numResults: Int?,
-    @Json(name = "results") val results: List<ResultDto?>?
+    @Json(name = "results") val results: List<CriticDto?>?
 ): Parcelable
 
 @Parcelize
 @JsonClass(generateAdapter = true)
-data class ResultDto(
+data class CriticDto(
     @Json(name = "display_name") val displayName: String?,
     @Json(name = "sort_name") val sortName: String?,
     @Json(name = "status") val status: String?,
